@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { WebSocketServer } from "ws";
 import { handleBrowserSocket } from "./proxy.js";
-import { listSessions, getSession, RECORDINGS_DIR } from "./sessions.js";
+import { listSessions, getSession, clearSessions, RECORDINGS_DIR } from "./sessions.js";
 import { enabledLanguages, agentIdFor, loadGlossaries } from "./languages.js";
 import { getPublicBaseUrl } from "./ngrok.js";
 import { toolsAvailable } from "./tools.js";
@@ -51,6 +51,14 @@ export function createApp({ log = console, webhookRegistered = false, serveStati
     hosted: Boolean(process.env.VERCEL),
   }));
   app.get("/api/sessions", (req, res) => res.json(listSessions()));
+  // Clear stored sessions (admin): Authorization: Bearer <TOOL_SECRET>.
+  app.delete("/api/sessions", (req, res) => {
+    const secret = process.env.TOOL_SECRET;
+    if (!secret || req.get("authorization") !== `Bearer ${secret}`) return res.status(401).json({ error: "unauthorized" });
+    const deleted = clearSessions();
+    log.info(`[sessions] cleared ${deleted} stored files`);
+    res.json({ deleted });
+  });
   app.get("/api/sessions/:id", (req, res) => {
     const session = getSession(req.params.id);
     if (!session) return res.status(404).json({ error: "session not found" });

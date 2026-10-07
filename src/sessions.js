@@ -131,3 +131,15 @@ export function listSessions() {
       durationSeconds: s.durationSeconds ?? null,
     }));
 }
+
+// Delete every stored session and recording on this machine (or this hosted instance).
+export function clearSessions() {
+  let deleted = 0;
+  for (const [dir, ext] of [[SESSIONS_DIR, ".json"], [RECORDINGS_DIR, ".wav"]]) {
+    for (const name of fs.readdirSync(dir)) {
+      if (!name.endsWith(ext)) continue;
+      try { fs.unlinkSync(path.join(dir, name)); deleted++; } catch {}
+    }
+  }
+  return deleted;
+}
