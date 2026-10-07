@@ -1,4 +1,6 @@
-# Hospital interpreter on Alebex Voice
+# An - Your Trusted Interpreter
+
+A hospital interpreter on Alebex Voice.
 
 Live demo: https://alebex-hack.vercel.app
 
