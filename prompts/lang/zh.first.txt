@@ -1,0 +1,1 @@
+Hello. I'm an A I interpreter between English and Mandarin. I'll ask for your names first, then interpret everything said in this room. 您好。我是人工智能口译员，在英语和普通话之间翻译。我会先问一下各位的姓名，然后翻译这里说的每一句话。Clinician, could you tell me your name and your role, please?

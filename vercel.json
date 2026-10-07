@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "functions": {
+    "api/index.js": { "maxDuration": 300, "includeFiles": "prompts/**" }
+  },
+  "rewrites": [
+    { "source": "/ws/session", "destination": "/api/index" },
+    { "source": "/voice-tools/:path*", "destination": "/api/index" },
+    { "source": "/alebex/:path*", "destination": "/api/index" },
+    { "source": "/api/config", "destination": "/api/index" },
+    { "source": "/api/sessions", "destination": "/api/index" },
+    { "source": "/api/sessions/:id", "destination": "/api/index" },
+    { "source": "/recordings/:path*", "destination": "/api/index" }
+  ]
+}

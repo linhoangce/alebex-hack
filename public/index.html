@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hospital interpreter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Hospital interpreter</h1>
+      <nav><a href="sessions.html">Past sessions</a></nav>
+    </header>
+
+    <section class="panel">
+      <form id="session-form" autocomplete="off">
+        <div class="grid">
+          <label>Patient's language
+            <select name="language" id="language"><option value="">Loading…</option></select>
+          </label>
+          <label class="toggle"><input type="checkbox" id="fill-intake" checked> Fill the intake form at the end of the visit</label>
+        </div>
+        <div class="controls">
+          <button type="submit" id="start">Start session</button>
+          <button type="button" id="end" disabled>End session</button>
+          <label class="toggle"><input type="checkbox" id="half-duplex" checked> Mute mic while the interpreter speaks (speakers)</label>
+        </div>
+      </form>
+      <div class="controls">
+        <span id="status" class="status" data-state="idle">Idle</span>
+        <span id="phase" class="phase" hidden></span>
+        <span class="meta" id="call-id"></span>
+      </div>
+      <div id="notice" class="notice"></div>
+    </section>
+
+    <div id="urgent-banner" class="banner urgent" hidden role="alert">
+      <div class="banner-body"><strong>Urgent symptom reported</strong><span id="urgent-text"></span></div>
+      <button type="button" id="urgent-dismiss">Dismiss</button>
+    </div>
+
+    <section class="panel card" id="session-card" hidden>
+      <h2>In the room</h2>
+      <dl>
+        <dt>Clinician</dt><dd id="card-clinician">—</dd>
+        <dt>Patient</dt><dd id="card-patient">—</dd>
+        <dt>Form of address</dt><dd id="card-address">—</dd>
+      </dl>
+    </section>
+
+    <section class="panel card" id="intake-card" hidden>
+      <h2>Intake <span id="intake-urgent" class="tag urgent" hidden>Urgent</span></h2>
+      <dl id="intake-fields"></dl>
+    </section>
+
+    <section class="panel">
+      <div id="transcript" class="transcript">
+        <div class="empty">The transcript appears here once the session starts.</div>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

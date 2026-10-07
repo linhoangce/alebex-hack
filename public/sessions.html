@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interpreter sessions</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Past sessions</h1>
+      <nav><a href="index.html">Live session</a></nav>
+    </header>
+
+    <section class="panel" id="list-panel">
+      <div id="list" class="list"><div class="empty">Loading…</div></div>
+    </section>
+
+    <section class="panel" id="detail" hidden>
+      <h2 id="detail-title"></h2>
+      <div class="meta" id="detail-meta"></div>
+      <div id="detail-flags"></div>
+      <div id="detail-details"></div>
+      <div id="detail-intake"></div>
+      <div id="detail-summary"></div>
+      <div id="detail-recording"></div>
+      <h2>Transcript</h2>
+      <div id="detail-transcript" class="transcript"></div>
+      <h2>Context sent to the agent</h2>
+      <pre class="block" id="detail-context"></pre>
+    </section>
+  </main>
+
+  <script>
+    const VI_RE = /[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i;
+    const CJK_RE = /[㐀-鿿]/;
+    const LANG_NAMES = { vi: "Vietnamese", zh: "Mandarin", yue: "Cantonese" };
+    const LANG_MARK_RE = /^\[LANG:[a-z]+\]\s*/i; // the engine's language mark, kept in older session files
+    const INTAKE_LABELS = {
+      date_of_birth: "Date of birth", reason_for_visit: "Reason for visit", onset_and_course: "Onset and course",
+      pain_score: "Pain score", allergies: "Allergies", medications: "Medications", medical_history: "Medical history",
+      pregnancy: "Pregnancy", other_notes: "Other notes", urgent: "Urgent", urgent_detail: "Urgent detail",
+    };
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const when = (iso) => (iso ? new Date(iso).toLocaleString() : "");
+    const langOf = (text) => (VI_RE.test(text) ? "vi" : CJK_RE.test(text) ? "zh" : "en");
+    const langName = (code) => LANG_NAMES[code] || code || "";
+    const dl = (rows) => `<dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>`;
+
+    async function loadList() {
+      const res = await fetch("/api/sessions");
+      const items = await res.json();
+      const list = $("list");
+      if (!items.length) { list.innerHTML = '<div class="empty">No sessions yet.</div>'; return; }
+      list.innerHTML = items.map((s) => `
+        <a href="#${esc(s.id)}">
+          <strong>${esc(s.patientName || "Unnamed patient")}</strong> · ${esc(langName(s.language))} · intake form: ${s.intake ? "yes" : "no"}
+          ${s.urgentCount ? '<span class="tag urgent">Urgent</span>' : ""}<br>
+          <small>${esc(when(s.createdAt))} · ${s.messageCount} lines${s.hasSummary ? " · summary" : ""}${s.hasIntake ? " · intake" : ""}${s.hasRecording ? " · recording" : ""}${s.endedAt ? "" : " · open"}</small>
+        </a>`).join("");
+    }
+
+    async function loadDetail(id) {
+      const res = await fetch(`/api/sessions/${encodeURIComponent(id)}`);
+      if (!res.ok) { $("detail").hidden = true; return; }
+      const s = await res.json();
+      const d = s.details || {};
+      $("detail").hidden = false;
+      $("detail-title").textContent = `${d.patient_name || "Unnamed patient"} · ${langName(s.language)} · ${when(s.createdAt)}`;
+      const dur = s.durationSeconds != null ? ` · ${s.durationSeconds} s` : "";
+      $("detail-meta").textContent = `intake form: ${s.intake ? "yes" : "no"} · call ${s.callId || "-"} · ${s.endedReason || (s.endedAt ? "ended" : "open")}${dur}`;
+      $("detail-flags").innerHTML = (s.urgentFlags || []).map((f) => `<div class="flag">Urgent: ${esc(f.symptom)} (${esc(String(f.category || "").replace(/_/g, " "))}${f.severity ? ", " + esc(f.severity) : ""})${f.at ? ` <small>${esc(when(f.at))}</small>` : ""}</div>`).join("");
+      $("detail-details").innerHTML = s.details
+        ? `<div class="card"><h2>In the room</h2>${dl([
+            ["Clinician", [d.clinician_name, d.clinician_role].filter(Boolean).join(", ") || "not given"],
+            ["Patient", d.patient_name || "not given"],
+            ["Form of address", d.preferred_address || "not given"],
+          ])}</div>`
+        : "";
+      const intake = s.intakeRecord;
+      $("detail-intake").innerHTML = intake
+        ? `<div class="card"><h2>Intake ${intake.urgent ? '<span class="tag urgent">Urgent</span>' : ""}</h2>${dl(
+            Object.entries(INTAKE_LABELS)
+              .filter(([k]) => k !== "urgent" && intake[k] !== undefined && intake[k] !== null && intake[k] !== "")
+              .map(([k, label]) => [label, intake[k]]))}</div>`
+        : "";
+      $("detail-summary").innerHTML = s.summary ? `<h2>Alebex summary</h2><p>${esc(s.summary)}</p>` : "";
+      $("detail-recording").innerHTML = s.recordingPath
+        ? `<h2>Recording</h2><audio controls preload="none" src="/recordings/${encodeURIComponent(s.id)}.wav"></audio> <a href="/recordings/${encodeURIComponent(s.id)}.wav">Download</a>`
+        : "";
+      const lines = (s.messages || []);
+      $("detail-transcript").innerHTML = lines.length
+        ? lines.map((m) => {
+            const text = String(m.text ?? "").replace(LANG_MARK_RE, "");
+            const lang = langOf(text);
+            return `<div class="msg ${esc(m.role)}"><div class="head"><span class="who">${m.role === "agent" ? "Interpreter" : "Room"}</span><span class="lang ${lang}">${lang.toUpperCase()}</span></div><p>${esc(text)}</p></div>`;
+          }).join("")
+        : '<div class="empty">No transcript lines were recorded.</div>';
+      $("detail-context").textContent = s.context || "";
+      $("detail").scrollIntoView({ behavior: "smooth" });
+    }
+
+    window.addEventListener("hashchange", () => loadDetail(location.hash.slice(1)));
+    loadList().then(() => { if (location.hash.length > 1) loadDetail(location.hash.slice(1)); });
+  </script>
+</body>
+</html>

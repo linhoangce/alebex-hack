@@ -1,0 +1,10 @@
+data
+.env
+env.env
+node_modules
+AGENTS.md
+alebex-voice-prompting-best-practices.md
+scripts/smoke-call.js
+local-server.js
+.env.local
+.env*.local
