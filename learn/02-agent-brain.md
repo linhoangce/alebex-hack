@@ -67,7 +67,8 @@ underscores make leftovers easy to find.
 ## Build it: the prompt template
 
 Create `prompts/interpreter.template.md`. Below it is shown one section at a time, each
-followed by the reason it is written that way. Copy the sections in order into one file.
+followed by the reason it is written that way. Copy the sections in order into one file,
+with one blank line between sections, as in the repo.
 
 The prompt uses `##` headings in capital letters. They help the model find its way, and
 they follow the skeleton in section 14 of the prompting guide.
@@ -279,9 +280,34 @@ and others). English has no such words, so the interpreter must choose. This sec
 one place where it is allowed to add something. That is why the opening asks the patient
 how they want to be addressed.
 
-The Mandarin pack (`zh.address.md`) does the same job for 您 (respectful "you") and 你
-(plain "you"), titles such as 王先生 (Mr Wang), and Chinese number words. Read it in the
-repo: it shows how much the rules change from one language to another.
+### The Mandarin pack: `zh.first.txt` and `zh.address.md`
+
+The Mandarin pack follows the same pattern. `zh.first.txt`:
+
+```
+Hello. I'm an A I interpreter between English and Mandarin. I'll ask for your names first, then interpret everything said in this room. 您好。我是人工智能口译员，在英语和普通话之间翻译。我会先问一下各位的姓名，然后翻译这里说的每一句话。Clinician, could you tell me your name and your role, please?
+```
+
+`zh.address.md`:
+
+```markdown
+## MANDARIN FORMS OF ADDRESS AND NUMBERS
+Mandarin has a respectful you, 您, and a plain you, 你. English has no such difference, so choosing between them is the only place you may add anything.
+- Use 您 with the patient by default. Use 你 only for a child, or when the patient asks for it or clearly speaks that way.
+- In the opening, the patient told you how they would like to be addressed. Use that form every time. Use the family name with 先生 or 女士, such as 王先生 or 李女士, or a title such as 王医生 or 老师. Taiwan patients may prefer 小姐 for a woman. Use the name sparingly, and 您 the rest of the time.
+- If the patient declined or has no preference, mirror the clinician: Mister becomes 先生, and Ms or Missus becomes 女士. With no clues, use 您 with no name.
+- Say the clinician's "I" as 我. Mandarin has no deferential form for it.
+- Keep the clinician's tone. Render the patient's politeness words, such as 麻烦您, 请问 and 谢谢, by meaning, as please or thank you, never as sir or ma'am. Do not render 您 itself. Say English please as 请 or 麻烦您 only where it sounds natural.
+- Relatives named by kin terms, such as 老伴 or 孩子他爸, are rendered by meaning, keeping who is meant.
+- Keep a name in the order the patient gave it, family name first. Record it in Latin letters as the patient spells it, otherwise in pinyin.
+- Numbers: use Chinese number words, 两 for a quantity of two such as 两片, 零 inside a number, and years digit by digit, such as 二零二六年. Say decimals with 点, and keep every unit in full, such as 毫克 and 毫升. Never round or convert.
+```
+
+It does the same job as the Vietnamese file for 您 (respectful "you") and 你 (plain "you"),
+titles such as 王先生 (Mr Wang), and kin terms. It also adds rules for Chinese number words,
+such as 两 for "two of something" and saying years digit by digit. Comparing the two files
+shows how much these rules change from one language to another, while the template stays
+the same.
 
 ### `vi.glossary.md`: the knowledge base
 
@@ -315,12 +341,14 @@ best match the words just spoken** (section 3 of the prompting guide). So:
 - **Add the words that are easy to mishear**, such as Vietnamese words that differ only by
   tone.
 
-The repo's glossary has 18 sections: symptoms, pain words, body parts, medicine
-instructions, units, tests, Canadian hospital terms, insurance terms and words easy to
-mishear.
+Each of the repo's two glossaries has 18 sections: symptoms, pain words, body parts,
+medicine instructions, units, tests, Canadian hospital terms, insurance terms and words easy
+to mishear. Both are printed in full in the [glossary appendix](appendix-glossaries.md).
+Copy them into `prompts/lang/vi.glossary.md` and `prompts/lang/zh.glossary.md`.
 
-**Tip for learners:** start with three or four sections you can check yourself. Ask a
-fluent speaker to read your glossary before you trust it.
+**Tip for learners:** to really learn the format, write three or four sections yourself
+first, then compare them with the appendix. If you change the glossary, ask a fluent speaker
+to read it before you trust it.
 
 ## Try it
 

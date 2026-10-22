@@ -61,6 +61,7 @@ Do the steps in order. Each one ends with a checkpoint you can run.
 | [9. The end-of-call report](09-end-of-call-webhook.md) | A signed webhook: summary and recording | `src/signature.js`, `src/webhook.js`, `src/webhookRoute.js` | A signed test report is accepted, a forged one is rejected |
 | [10. Testing and deploying](10-testing-and-deploying.md) | An automated smoke test, Vercel hosting, an admin clean-up route | `scripts/smoke-call.js`, `api/index.js`, `vercel.json` | `npm run smoke` passes; the app runs on a public URL |
 | [Cheat sheet](11-cheat-sheet.md) | Message list, settings list, troubleshooting, practice ideas | none | |
+| [Glossary appendix](appendix-glossaries.md) | The two medical glossaries in full, for Step 2 | `prompts/lang/*.glossary.md` | |
 
 ## How each step is laid out
 

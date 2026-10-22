@@ -107,6 +107,7 @@ for free practice, and exercises.
 | `prompts/interpreter.template.md` | [2](02-agent-brain.md) |
 | `prompts/lang/vi.address.md`, `vi.first.txt`, `vi.glossary.md` | [2](02-agent-brain.md) |
 | `prompts/lang/zh.address.md`, `zh.first.txt`, `zh.glossary.md` | [2](02-agent-brain.md) |
+| (full text of both `*.glossary.md` files) | [Glossary appendix](appendix-glossaries.md) |
 | `src/alebex.js`, `src/env.js`, `src/languages.js`, `scripts/setup-agents.js` | [3](03-alebex-api-and-agents.md) |
 | `src/words.js`, `src/context.js` | [4](04-server-and-voice-bridge.md) |
 | `src/proxy.js` | [4](04-server-and-voice-bridge.md), [6](06-saving-sessions.md), [7](07-tools.md), [8](08-ending-a-visit.md) |

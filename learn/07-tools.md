@@ -669,7 +669,8 @@ import { ensurePublicUrl } from "./src/ngrok.js";
 import { toolsAvailable } from "./src/tools.js";
 ```
 
-**2.** Right after `logStartupChecks(console);`, add:
+**2.** Below `logStartupChecks(console);` and the blank line under it, add these lines,
+then leave a blank line before `const { app, glossaries } = ...`:
 
 ```js
 const publicUrl = await ensurePublicUrl(PORT, console);
